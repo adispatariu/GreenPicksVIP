@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenPicks VIP - Pronósticos Deportivos de Élite</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR&vault=true&intent=subscription"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --bg-card: #151f32;
+            --green-glow: #10b981;
+            --green-hover: #059669;
+            --blue-accent: #0ea5e9;
+            --text-muted: #94a3b8;
+            --border-color: #22324d;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* BARRA SUPERIOR */
+        .top-bar {
+            background-color: #070a12;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: flex-end;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .lang-select {
+            background-color: var(--bg-card);
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            background: radial-gradient(circle at top, #1e293b 0%, var(--bg-dark) 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero h1 { font-size: 2.5em; margin: 0 0 10px 0; font-weight: 800; }
+        .hero h1 span { color: var(--green-glow); }
+        .hero p { font-size: 1.1em; color: var(--text-muted); max-width: 600px; margin: 0 auto 25px auto; }
+
+        .racha-container {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        /* NAVEGACIÓN */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 15px 20px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            flex: 1;
+            text-align: center;
+            max-width: 200px;
+        }
+
+        .tab-btn.active { color: #ffffff; border-bottom-color: var(--green-glow); }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* TARJETAS DE PARTIDOS */
+        .grid-partidos { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .partido-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .liga-badge { background: #22324d; font-size: 0.75em; padding: 6px 12px; border-radius: 6px; font-weight: bold; }
+        .equipos { font-size: 1.3em; font-weight: 700; margin: 10px 0; }
+        .hora { font-size: 0.85em; color: var(--text-muted); }
+        .zona-compra { background: #0b0f19; border-radius: 12px; padding: 15px; margin-top: 15px; text-align: center; border: 1px solid var(--border-color); }
+        .precio-tag { font-size: 1.6em; color: var(--blue-accent); font-weight: 800; margin: 5px 0 15px 0; }
+        .paypal-button-container { margin-top: 10px; }
+
+        /* MARKETING SECCIONES */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 20px; }
+        .feature-box { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .feature-box h3 { color: var(--green-glow); margin-top: 0; }
+
+        /* FOOTER Y ENLACE LEGAL */
+        footer { text-align: center; padding: 40px 20px; font-size: 0.75em; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 60px; line-height: 1.6;}
+        
+        .legal-link {
+            color: var(--blue-accent);
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        .legal-link:hover { color: #7dd3fc; }
+
+        /* MODAL LEGAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-box { background-color: var(--bg-card); border: 2px solid var(--border-color); border-radius: 16px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; padding: 25px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); transform: translateY(-20px); transition: transform 0.3s ease; }
+        .modal-overlay.open .modal-box { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-header h2 { margin: 0; font-size: 1.4em; color: var(--green-glow); }
+        .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.8em; cursor: pointer; }
+        .close-btn:hover { color: #fff; }
+        .modal-body h3 { font-size: 1.1em; color: var(--blue-accent); margin-top: 20px; margin-bottom: 8px;}
+        .modal-body p { font-size: 0.9em; color: #e2e8f0; line-height: 1.6; margin: 0 0 15px 0; text-align: justify; }
+
+        /* MÓVIL RESPONSIVE */
+        @media (max-width: 600px) {
+            .top-bar { justify-content: center; }
+            .hero h1 { font-size: 2em; }
+            .grid-partidos { grid-template-columns: 1fr; }
+            .nav-tabs { position: fixed; bottom: 0; top: auto; width: 100%; border-top: 1px solid var(--border-color); border-bottom: none; }
+            .container { margin-bottom: 80px; padding: 0 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <select class="lang-select" id="selector-idioma" onchange="cambiarIdioma(this.value)">
+            <option value="es">🇪🇸 Español</option>
+            <option value="en">🇬🇧 English</option>
+        </select>
+    </div>
+
+    <section class="hero">
+        <div class="racha-container">
+            <span id="txt-racha">🔥 NUESTRA RACHA RECIENTE:</span>&nbsp;✅ ✅ ❌ ✅ ✅
+        </div>
+        <h1 style="margin-top: 20px;">Green<span>Picks VIP</span></h1>
+        <p id="txt-subtitulo">Dejate de corazonadas. Accede a análisis basados en big data, estadísticas avanzadas y valor matemático real.</p>
+    </section>
+
+    <nav class="nav-tabs">
+       <!-- Ejemplo de cómo deberían quedar tus botones en el HTML -->
+<button class="tab-btn border-b-2 border-emerald-500" onclick="cambiarPestaña('pronosticos', this)">🎯 Pronósticos</button>
+<button class="tab-btn" onclick="cambiarPestaña('mis-picks', this)">🔓 Mis Picks</button>
+    </nav>
+
+    <div class="container">
+        
+        <!-- PESTAÑA PRONÓSTICOS -->
+        <div id="pronosticos" class="tab-content active">
+            
+            <section class="max-w-6xl mx-auto pb-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-black uppercase text-emerald-400 tracking-wide">🏆 Resultados Verificados</h2>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-[#151f32] border border-[#22324d] rounded-xl p-4 text-center">
+                        <p class="text-2xl font-black text-emerald-400">148</p>
+                        <span class="text-gray-400 text-xs font-semibold block mt-1">Picks Ganados</span>
+                    </div>
+                    <div class="bg-[#151f32] border border-[#22324d] rounded-xl p-4 text-center">
+                        <p class="text-2xl font-black text-sky-400">86.7%</p>
+                        <span class="text-gray-400 text-xs font-semibold block mt-1">% Acierto</span>
+                    </div>
+                    <div class="bg-[#151f32] border border-[#22324d] rounded-xl p-4 text-center">
+                        <p class="text-2xl font-black text-yellow-400">2.18</p>
+                        <span class="text-gray-400 text-xs font-semibold block mt-1">Cuota Media</span>
+                    </div>
+                    <div class="bg-[#151f32] border border-[#22324d] rounded-xl p-4 text-center">
+                        <p class="text-2xl font-black text-red-400">🔥 12</p>
+                        <span class="text-gray-400 text-xs font-semibold block mt-1">Racha Actual</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN SUSCRIPCIONES: AHORA SIEMPRE VISIBLE CON CONDICIONALES -->
+            <div id="seccion-suscripcion" class="mb-12 max-w-4xl mx-auto text-center bg-slate-900/40 p-6 rounded-2xl border border-slate-800/80">
+                <span class="bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg shadow-emerald-500/20">
+                    🎁 Tarifas de Suscripción VIP Mensual
+                </span>
+                <h2 class="text-3xl font-extrabold text-white mt-4 mb-2">Planes VIP Mensuales</h2>
+                <p class="text-gray-400 text-sm max-w-md mx-auto mb-8" id="txt-suscripcion-instruccion">Desbloquea los botones de suscripción mensual realizando la compra de cualquier partido individual abajo.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                    
+                    <!-- PLAN 1 -->
+                    <div id="card-sub-1" class="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-emerald-500/30 rounded-2xl p-6 shadow-xl flex flex-col justify-between transition-all duration-300">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-emerald-400 tracking-wider uppercase">Riesgo Bajo</span>
+                                <span id="status-lock-1" class="text-[11px] font-black text-red-400 uppercase tracking-wide">🔒 Bloqueado</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white" id="sub-title1">Picks Muy Probables</h3>
+                            <p class="text-gray-400 text-xs mt-2" id="sub-desc1">Análisis de alta fiabilidad y consistencia para construir tu banca paso a paso.</p>
+                            <div class="text-3xl font-black text-emerald-400 my-5">3.99€ <span class="text-xs text-gray-500 font-normal">/ al mes</span></div>
+                        </div>
+                        <div id="paypal-sub-probables" class="w-full mt-2 text-center text-xs text-amber-400/80 font-medium bg-slate-950/60 p-3 rounded-xl border border-dashed border-slate-800">
+                            🔒 Desbloquea este plan VIP comprando cualquier pronóstico individual de abajo.
+                        </div>
+                    </div>
+
+                    <!-- PLAN 2 -->
+                    <div id="card-sub-2" class="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-rose-500/40 rounded-2xl p-6 shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-300">
+                        <div class="absolute top-0 right-0 bg-rose-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-bl-lg tracking-wider">Altas Cuotas</div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-rose-400 tracking-wider uppercase">Riesgo Alto</span>
+                                <span id="status-lock-2" class="text-[11px] font-black text-red-400 uppercase tracking-wide">🔒 Bloqueado</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white" id="sub-title2">Picks de Alto Riesgo</h3>
+                            <p class="text-gray-400 text-xs mt-2" id="sub-desc2">Búsqueda de cuotas de gran valor matemático, sorpresas y combinadas explosivas.</p>
+                            <div class="text-3xl font-black text-rose-400 my-5">6.99€ <span class="text-xs text-gray-500 font-normal">/ al mes</span></div>
+                        </div>
+                        <div id="paypal-sub-riesgo" class="w-full mt-2 text-center text-xs text-amber-400/80 font-medium bg-slate-950/60 p-3 rounded-xl border border-dashed border-slate-800">
+                            🔒 Desbloquea este plan VIP comprando cualquier pronóstico individual de abajo.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <h2 id="txt-titulo-partidos" style="text-align: center; margin-bottom: 30px; font-size: 1.5em; font-weight: bold;">Partidos Analizados Disponibles</h2>
+            <div class="grid-partidos mb-12" id="contenedor-partidos"></div>
+
+            <h2 id="txt-titulo-metodo" style="text-align: center; margin-top: 40px;">El Método GreenPicks</h2>
+            <div class="features-grid">
+                <div class="feature-box">
+                    <h3 id="f1-t">📊 Datos, No Impulsos</h3>
+                    <p id="f1-d">Analizamos rachas, bajas de jugadores y estadísticas avanzadas.</p>
+                </div>
+                <div class="feature-box">
+                    <h3 id="f2-t">💰 Gestión de Stake</h3>
+                    <p id="f2-d">Te enseñamos cuánto dinero apostar para proteger tu capital.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA MIS PICKS (ÁREA DE ACCESO REESTRUCTURADA) -->
+        <div id="mis-picks" class="tab-content">
+            <h2 id="txt-titulo-mis-picks" style="text-align: center; margin-bottom: 10px; font-size: 1.5em; font-weight: bold;">Tus Claves Desbloqueadas</h2>
+            <p class="text-center text-gray-400 text-xs mb-8" id="txt-sub-mis-picks">Historial detallado e indexación instantánea de todo tu contenido VIP adquirido.</p>
+
+            <!-- PANEL DE CONTROL DEL ESTADO DE SUSCRIPCIONES DEL CLIENTE -->
+            <div class="max-w-4xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-around gap-4 text-center">
+                <div>
+                    <span class="text-[11px] text-gray-400 font-bold block uppercase tracking-wider" id="panel-lbl-1">Plan Muy Probables (3.99€)</span>
+                    <span id="user-status-probables" class="text-xs font-black text-red-500 bg-red-500/10 px-4 py-1 rounded-full inline-block mt-1.5">INACTIVO</span>
+                </div>
+                <div class="w-px h-8 bg-slate-800 hidden md:block"></div>
+                <div>
+                    <span class="text-[11px] text-gray-400 font-bold block uppercase tracking-wider" id="panel-lbl-2">Plan Alto Riesgo (6.99€)</span>
+                    <span id="user-status-riesgo" class="text-xs font-black text-red-500 bg-red-500/10 px-4 py-1 rounded-full inline-block mt-1.5">INACTIVO</span>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 1: PARTIDOS SUELTOS COMPRADOS -->
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 pl-1" id="lbl-compras-ind">📍 Pronósticos Individuales Desbloqueados</h3>
+            <div class="grid-partidos mb-12" id="contenedor-comprados"></div>
+
+            <!-- SECCIÓN 2: PROSPECTOS MENSUALES POR SUSCRIPCIÓN -->
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 pl-1" id="lbl-canales-vip">💎 Contenido de Canales Mensuales Activos</h3>
+            <div id="area-contenido-suscrito" class="space-y-4 mb-12">
+                <!-- Inyección dinámica según la suscripción -->
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <span id="txt-footer">Aviso: Los pronósticos son análisis probabilísticos. Juega con responsabilidad. +18.</span>
+        <br>
+        <span class="legal-link" id="btn-legal" onclick="toggleModal(true)">📋 Términos Legales y Condiciones</span>
+    </footer>
+
+    <div class="modal-overlay" id="legal-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 id="m-title">Términos Legales y Responsabilidad</h2>
+                <button class="close-btn" onclick="toggleModal(false)">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3 id="m-h1">1. Exención de Responsabilidad</h3>
+                <p id="m-p1">GreenPicks VIP ofrece servicios de análisis estadístico deportivo basados en datos públicos. Los contenidos publicados representan opiniones probabilísticas, en ningún caso constituyen asesoramiento financiero o recomendaciones de inversión, ni garantizan la obtención de beneficios. El usuario asume total responsabilidad de sus decisiones de juego.</p>
+                <h3 id="m-h2">2. Política de Reembolsos</h3>
+                <p id="m-p2">Al pagar un pronóstico exclusivo, el usuario adquiere el acceso inmediato a contenido digital informativo. Debido a la naturaleza de entrega instantánea de la información, no se admitirán devoluciones ni reembolsos una vez el pronóstico haya sido desvelado.</p>
+                <h3 id="m-h3">3. Juego Responsable</h3>
+                <p id="m-p3">Queda estrictamente prohibido el acceso a menores de 18 años. El juego puede generar adicción. Instamos a jugar de forma responsable y únicamente con dinero que pueda permitirse perder.</p>
+            </div>
+        </div>
+    </div>
+<script>
+    const partidos = [
+        {
+            id: 'cupoA',
+            nombre: "⚡ PRONÓSTICO ELITE",
+            precio: 5.00,
+            partidos: [
+                { eq: "México vs Inglaterra", fecha: "06/07", hora: "02:00", cuotas: "México: 3.10 | X: 3.20 | Inglaterra: 2.40" },
+                { eq: "Portugal vs España", fecha: "06/07", hora: "21:00", cuotas: "Portugal: 2.40 | X: 3.60 | España: 1.90" }
+            ],
+            picksVip: ["Argentina: Victoria + Más de 2.5 goles", "Suiza vs Colombia: Victoria Colombia + Ambos Marcan"]
+        },
+        {
+            id: 'cupoB',
+            nombre: "🚀 PRONÓSTICO PRO",
+            precio: 8.00,
+            partidos: [
+                { eq: "EE.UU. vs Bélgica", fecha: "07/07", hora: "02:00", cuotas: "EE.UU.: 2.50 | X: 3.50 | Bélgica: 2.70" },
+                { eq: "Argentina vs Egipto", fecha: "07/07", hora: "18:00", cuotas: "Argentina: 1.40 | X: 4.50 | Egipto: 8.50" },
+                { eq: "Suiza vs Colombia", fecha: "07/07", hora: "22:00", cuotas: "Suiza: 3.50 | X: 3.00 | Colombia: 2.30" }
+            ],
+            picksVip: ["EE.UU. vs Bélgica: Victoria EE.UU. + Más 2.5", "Argentina vs Egipto: Menos 2.5 goles"]
+        }
+    ];
+
+    function renderizarPartidos() {
+        const contenedor = document.getElementById('contenedor-partidos');
+        if (!contenedor) return;
+        contenedor.innerHTML = '';
+
+        partidos.forEach(p => {
+            const comprado = localStorage.getItem(`cupo_comprado_${p.id}`) === 'true';
+            const div = document.createElement('div');
+            div.className = 'bg-slate-800 p-6 rounded-2xl border border-gray-700 mb-6';
+            
+            let html = `
+                <h3 class="text-2xl font-bold mb-4 text-emerald-400">${p.nombre}</h3>
+                <div class="space-y-4">
+                    ${p.partidos.map(i => `
+                        <div class="border-b border-gray-700 pb-2">
+                            <div class="flex justify-between font-bold text-white">
+                                <span>${i.eq}</span>
+                                <span class="text-xs bg-slate-900 px-2 py-1 rounded">${i.fecha} - ${i.hora}</span>
+                            </div>
+                            <div class="text-xs text-gray-400 mt-2">${i.cuotas}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            if (comprado) {
+                html += `
+                    <div class="mt-4 p-3 bg-emerald-900/20 text-emerald-400 font-bold border border-emerald-700 rounded text-center">
+                        ✅ PICK VIP DESBLOQUEADO: ${p.picksVip.join(', ')}
+                        <div class="mt-3 flex justify-center gap-6">
+                            <button onclick="alert('¡Gracias por tu Like!')" class="hover:text-white">👍 Like</button>
+                            <button onclick="alert('Tomamos nota para mejorar')" class="hover:text-white">👎 Dislike</button>
+                        </div>
+                    </div>`;
+            } else {
+                html += `<div class="mt-6 text-center"><div class="text-3xl font-bold text-white mb-4">${p.precio}€</div><div id="paypal-${p.id}"></div></div>`;
+            }
+
+            div.innerHTML = html;
+            contenedor.appendChild(div);
+
+            if (!comprado) {
+                paypal.Buttons({
+                    createOrder: (data, actions) => {
+                        return actions.order.create({ purchase_units: [{ amount: { value: p.precio.toFixed(2) } }] });
+                    },
+                    onApprove: (data, actions) => {
+                        return actions.order.capture().then((details) => {
+                            localStorage.setItem(`cupo_comprado_${p.id}`, 'true');
+                            const contenedorMensaje = document.createElement('div');
+                            contenedorMensaje.className = "fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black/80 z-50";
+                            contenedorMensaje.innerHTML = `
+                                <div class="bg-slate-800 p-8 rounded-2xl border border-emerald-500 text-center max-w-sm mx-4">
+                                    <h2 class="text-2xl font-bold text-emerald-400 mb-2">¡Gracias, ${details.payer.name.given_name || 'usuario'}!</h2>
+                                    <p class="text-white mb-6">El pago se ha procesado correctamente. Ya puedes acceder a tu pronóstico.</p>
+                                    <button onclick="location.reload()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-6 rounded-full transition">Ver mis Picks</button>
+                                </div>
+                            `;
+                            document.body.appendChild(contenedorMensaje);
+                        });
+                    }
+                }).render(`#paypal-${p.id}`);
+            }
+        });
+    }
+
+    window.onload = renderizarPartidos;
+</script>
+
+<div class="mt-12 text-center border-t border-gray-700 pt-8 mb-8">
+    <p class="text-gray-400 mb-4">Sígueme para más análisis y contenido diario:</p>
+    <div class="flex justify-center gap-8 font-bold">
+        <a href="https://www.instagram.com/greenpickspiv" target="_blank" class="text-pink-500 hover:text-pink-400 transition">Instagram</a>
+        <a href="https://www.tiktok.com/@greenpickspiv" target="_blank" class="text-white hover:text-emerald-400 transition">TikTok</a>
+    </div>
+</div>
+</body>
+</html>
